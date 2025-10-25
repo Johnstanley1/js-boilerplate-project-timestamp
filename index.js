@@ -23,7 +23,24 @@ app.get("/", function (req, res) {
 app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
+ 
 
+app.get("api/:date?", function(req, res) {
+  let header = "Timestamp Microservice\n"
+  let subHeader = "Output\n"
+  let currentDate;
+  
+  if (isNaN(req.params.date)){
+    currentDate = new Date(req.params.date)
+  }else{
+    currentDate = new Date(parseInt(req.params.date))
+  }
+
+  let errorResponse = {"error": `${currentDate}`}
+  let validResponse = {"unix": `${currentDate.getTime()}`, "utc": `${currentDate.toUTCString()}`}
+  console.log(currentDate, "\n", errorResponse, "\n", validResponse)
+  res.json({validResponse})
+})
 
 
 // Listen on port set in environment variable or default to 3000
