@@ -25,21 +25,23 @@ app.get("/api/hello", function (req, res) {
 });
  
 
-app.get("api/:date?", function(req, res) {
-  let header = "Timestamp Microservice\n"
-  let subHeader = "Output\n"
-  let currentDate;
+app.get("/api/:date?", function(req, res) {
+  let dateParam = req.params.date;
+  let date;
   
-  if (isNaN(req.params.date)){
-    currentDate = new Date(req.params.date)
+  if (!dateParam){
+    date = new Date();
+  }else if(!isNaN(Number(dateParam))){
+    date = new Date(Number(dateParam))
   }else{
-    currentDate = new Date(parseInt(req.params.date))
+    date = new Date(dateParam)
   }
-
-  let errorResponse = {"error": `${currentDate}`}
-  let validResponse = {"unix": `${currentDate.getTime()}`, "utc": `${currentDate.toUTCString()}`}
-  console.log(currentDate, "\n", errorResponse, "\n", validResponse)
-  res.json({validResponse})
+  
+  if(date.toString() === "Invalid Date"){
+      res.json({error: "Invalid Date"})
+  }
+       
+  res.json({unix: date.getTime(), utc: date.toUTCString()})
 })
 
 
