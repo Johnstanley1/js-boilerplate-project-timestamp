@@ -152,12 +152,94 @@ const app = express()
 const cors = require('cors')
 require('dotenv').config()
 
+app.use(express.urlencoded({ extended: true })) // to read form data
+app.use(express.json())
+
 app.use(cors())
 app.use(express.static('public'))
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+// // In-memory storage
+let users = [];
+let exercises = []
+let counter = 1;
+
+app.get('/api/users', (req, res)=>{
+  res.json(users)
+})
+
+app.get('/api/users/:_id/logs', (req, res) => {
+  const { _id } = req.params
+  const { from, to, limit } = req.query
+  const user = users.find(u => u._id === _id)
+
+  if (!user) {
+    return res.json({ error: 'User not found' })
+  }
+
+  let log = exercises.filter(e => e._id === _id)
+
+  // filter by date range
+  if (from) {
+    const fromDate = new Date(from)
+    log = log.filter(e => new Date(e.date) >= fromDate)
+  }
+  if (to) {
+    const toDate = new Date(to)
+    log = log.filter(e => new Date(e.date) <= toDate)
+  }
+
+  // limit results
+  if (limit) {
+    log = log.slice(0, parseInt(limit))
+  }
+
+  res.json({
+    username: user.username,
+    count: log.length,
+    _id: user._id,
+    log: log.map(e => ({
+      description: e.description,
+      duration: e.duration,
+      date: e.date
+    }))
+  })
+})
+
+app.post('/api/users', (req, res)=>{
+  const {username} = req.body
+  const newUser = {
+    username,
+    _id: Date.now().toString() 
+  }
+
+  users.push(newUser)
+  res.json(newUser)
+})
+
+app.post('/api/users/:_id/exercises', (req, res)=>{
+  const { _id } = req.params
+  const user = users.find(u => u._id === _id)
+  const {description, duration, date} = req.body
+  
+   if (!user) {
+    return res.json({ error: 'User not found' })
+  }
+
+   const exercise = {
+    username: user.username,
+    description,
+    duration: parseInt(duration),
+    date: date ? new Date(date).toDateString() : new Date().toDateString(),
+    _id: user._id
+  }
+
+  exercises.push(exercise)
+  res.json(exercise)
+
+})
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
