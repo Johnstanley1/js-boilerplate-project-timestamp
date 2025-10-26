@@ -80,71 +80,84 @@
 //   });
 // });
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const dns = require("dns");
-const app = express();
+// require('dotenv').config();
+// const express = require('express');
+// const cors = require('cors');
+// const dns = require("dns");
+// const app = express();
 
-// Basic Configuration
-const port = process.env.PORT || 3000;
+// // Basic Configuration
+// const port = process.env.PORT || 3000;
 
-app.use(cors());
+// app.use(cors());
 
-app.use('/public', express.static(`${process.cwd()}/public`));
+// app.use('/public', express.static(`${process.cwd()}/public`));
 
-app.get('/', function(req, res) {
-  res.sendFile(process.cwd() + '/views/index.html');
-});
+// app.get('/', function(req, res) {
+//   res.sendFile(process.cwd() + '/views/index.html');
+// });
 
-// Your first API endpoint
-app.get('/api/hello', function(req, res) {
-  res.json({ greeting: 'hello API' });
-});
+// // Your first API endpoint
+// app.get('/api/hello', function(req, res) {
+//   res.json({ greeting: 'hello API' });
+// });
   
-app.use(express.urlencoded({ extended: false }));
-app.use(express.json());
+// app.use(express.urlencoded({ extended: false }));
+// app.use(express.json());
 
-// In-memory storage
-let urls = [];
-let counter = 1;
+// // In-memory storage
+// let urls = [];
+// let counter = 1;
 
-// POST endpoint to shorten URLs
-app.post("/api/shorturl", (req, res) => {
-  const original_url = req.body.url;
+// // POST endpoint to shorten URLs
+// app.post("/api/shorturl", (req, res) => {
+//   const original_url = req.body.url;
 
-    let urlObj;
-  try {
-    urlObj = new URL(original_url);
-  } catch (err) {
-    return res.json({ error: "invalid url" });
-  }
+//     let urlObj;
+//   try {
+//     urlObj = new URL(original_url);
+//   } catch (err) {
+//     return res.json({ error: "invalid url" });
+//   }
 
-  // Extract hostname (e.g. "www.google.com")
-  const hostname = urlObj.hostname;
+//   // Extract hostname (e.g. "www.google.com")
+//   const hostname = urlObj.hostname;
 
-  // Verify with DNS lookup
-  dns.lookup(hostname, (err, address) => {
-    if (err || !address) {
-      return res.json({ error: "invalid url" });
-    }
+//   // Verify with DNS lookup
+//   dns.lookup(hostname, (err, address) => {
+//     if (err || !address) {
+//       return res.json({ error: "invalid url" });
+//     }
 
-    // Domain exists — store and return
-    const short_url = counter++;
-    urls.push({ original_url, short_url });
+//     // Domain exists — store and return
+//     const short_url = counter++;
+//     urls.push({ original_url, short_url });
 
-    res.json({ original_url, short_url });
-  });
+//     res.json({ original_url, short_url });
+//   });
+// });
+
+// // Redirect endpoint
+// app.get("/api/shorturl/:short_url", (req, res) => {
+//   const { short_url } = req.params;
+//   const record = urls.find(u => u.short_url == short_url);
+
+//   if (!record) return res.json({ error: "No short URL found" });
+//   res.redirect(record.original_url);
+// });
+
+
+const express = require('express')
+const app = express()
+const cors = require('cors')
+require('dotenv').config()
+
+app.use(cors())
+app.use(express.static('public'))
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/views/index.html')
 });
 
-// Redirect endpoint
-app.get("/api/shorturl/:short_url", (req, res) => {
-  const { short_url } = req.params;
-  const record = urls.find(u => u.short_url == short_url);
-
-  if (!record) return res.json({ error: "No short URL found" });
-  res.redirect(record.original_url);
-});
 
 // Listen on port set in environment variable or default to 3000
 var listener = app.listen(process.env.PORT || 3000, function () {
