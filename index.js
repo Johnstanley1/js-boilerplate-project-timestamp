@@ -151,6 +151,7 @@ const express = require('express')
 const app = express()
 const cors = require('cors')
 require('dotenv').config()
+const multer = require('multer')
 
 app.use(express.urlencoded({ extended: true })) // to read form data
 app.use(express.json())
@@ -160,6 +161,23 @@ app.use(express.static('public'))
 
 app.get('/', function (req, res) {
   res.sendFile(process.cwd() + '/views/index.html');
+});
+
+
+// Set up multer for handling file uploads (no saving to disk)
+const upload = multer({ storage: multer.memoryStorage() });
+
+// Handle file upload
+app.post('/api/uploadFile', upload.single('upfile'), (req, res) => {
+  if (!req.file) {
+    return res.json({ error: 'No file uploaded' });
+  }
+
+  res.json({
+    name: req.file.originalname,
+    type: req.file.mimetype,
+    size: req.file.size
+  });
 });
 
 
