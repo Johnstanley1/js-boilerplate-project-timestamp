@@ -125,7 +125,7 @@ input[type='text'] {
   text-align: center;
 } */
 
-* {
+/* * {
   box-sizing: border-box;
 }
 
@@ -183,4 +183,47 @@ code {
   font-size: 1.2em;
   background-color: #FFFEC4;
   padding: 2px;
+} */
+
+/****** Main Styling ******/
+
+body {
+  font-family: 'Roboto', sans-serif;
+  font-size: 16px;
+  color: #222;
+  background-color: #ECF0F1;
+  text-align: center;
+}
+
+.container {
+  padding: 0;
+  margin-top: 40px;
+}
+
+.footer {
+  margin-top: 60px;
+}
+
+a {
+  color: #2574A9;
+}
+
+input {
+  display: block;
+  position: relative;
+  margin: 10px auto;
+}
+
+input#button {
+  width: 230px;
+}
+
+.view {
+  position:relative;
+  margin: auto;
+  margin-top: 40px;
+  border: 1px  solid  #aaa;
+  padding: 20px;
+  width: 60%;
+  min-width: 400px;
 }
